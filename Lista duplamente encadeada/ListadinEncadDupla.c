@@ -351,3 +351,97 @@ escritas em no->ant->prox (que recebe NULL), no->prox (que aponta para a antiga 
 e (*li)->ant (que aponta para o nó movido).
  */
 
+/* Questão 6*/
+int remove_todos(Lista* li, int mat) {
+    if (li == NULL || *li == NULL) return 0;
+
+    Elem* no = *li;
+    int cont = 0;
+
+    while (no != NULL) {
+        if (no->dados.matricula == mat) {
+            Elem* aux = no;
+            
+            no = no->prox;
+            if (aux->ant == NULL) {
+                *li = aux->prox;
+            } else {
+                aux->ant->prox = aux->prox;
+            }
+            if (aux->prox != NULL) {
+                aux->prox->ant = aux->ant;
+            }
+            free(aux);
+            cont++;
+        } else {
+            no = no->prox;
+        }
+    }
+    return cont;
+}
+
+/* Questão 7 */
+void inverte_lista(Lista* li) {
+    if (li == NULL || *li == NULL) return;
+
+    Elem* atual = *li;
+    Elem* temp = NULL;
+
+    while (atual != NULL) {
+        temp = atual->ant;
+        atual->ant = atual->prox;
+        atual->prox = temp;
+        temp = atual;
+        atual = atual->ant;
+    }
+    if (temp != NULL) {
+        *li = temp;
+    }
+}
+/* Questão 8  */
+int eh_palindromo(Lista* li) {
+    if (li == NULL) return 0;
+
+    if (*li == NULL) return 1;
+
+    Elem* inicio = *li;
+    Elem* fim = *li;
+
+    while (fim->prox != NULL) {
+        fim = fim->prox;
+    }
+
+    while (inicio != fim && inicio->ant != fim) {
+        if (inicio->dados.matricula != fim->dados.matricula) {
+            return 0; 
+        }
+        inicio = inicio->prox;
+        fim = fim->ant;
+    }
+
+    return 1; 
+}
+
+/* 
+ * 1. Condição de Parada para Tamanhos Par e Ímpar:
+ *    - Tamanho ÍMPAR: Os ponteiros 'inicio' e 'fim' convergem exatamente para o mesmo nó central. 
+ *      A condição (inicio == fim) encerra o laço assim que se encontram, evitando comparar o nó central consigo mesmo.
+ *    - Tamanho PAR: Os ponteiros não se encontram no mesmo nó; em vez disso, cruzam-se após comparar os dois elementos do meio. 
+ *      Quando se cruzam, o ponteiro 'inicio' passa a ser o sucessor do nó onde estava 'fim', fazendo com que 'inicio->ant' 
+ *      seja exatamente igual a 'fim'. A verificação (inicio->ant == fim) deteta esse cruzamento e encerra o laço com segurança.
+ * 
+ * 2. Custo da Função:
+ *    - Custo Temporal: O(n), onde n é o número de elementos da lista[cite: 8]. Realiza-se um primeiro percurso de n passos 
+ *      para encontrar o último elemento e, em seguida, um percurso de n/2 passos comparando as extremidades até ao centro. 
+ *      Assintoticamente, O(n) + O(n/2) = O(n).
+ *    - Custo Espacial: O(1) (constante), pois utiliza apenas dois ponteiros de percurso ('inicio' e 'fim'), sem alocação 
+ *      dinâmica nem vetores auxiliares[cite: 8].
+ * 
+ * 3. Por que a mesma estratégia não se aplica diretamente à Lista Encadeada Simples?
+ *    A estratégia de caminhar das duas extremidades para o centro depende fundamentalmente da navegação bidirecional. 
+ *    Numa lista encadeada simples, os nós possuem apenas o ponteiro 'prox', não existindo o campo 'ant' para recuar. 
+ *    Portanto, o ponteiro 'fim' não consegue voltar um nó para trás (fim = fim->ant) em tempo O(1). Para simular 
+ *    esse recuo numa lista simples, seria necessário percorrer a lista a partir do início até ao antecessor a cada passo 
+ *    (elevando o custo para O(n²)), ou utilizar estruturas auxiliares (como uma pilha) ou alterar a lista (inverter a segunda metade), 
+ *    o que é expressamente proibido pelo enunciado[cite: 8].
+ */
